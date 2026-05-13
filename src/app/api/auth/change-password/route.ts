@@ -4,10 +4,13 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 
 export async function PATCH(request: NextRequest) {
+
   try {
+    // Recebe email e nova senha
     const body = await request.json();
     const { email, newPassword } = body;
-
+    
+    // Verifica se usuário existe
     const user = prisma.user.findUnique({ where: { email } });
     if (!user || !newPassword) {
       return NextResponse.json(
@@ -25,13 +28,13 @@ export async function PATCH(request: NextRequest) {
       data: { password: hashedPassword },
     });
 
+    // Retorna usuáiro e mensagem
     return NextResponse.json(
       { sucess: true, message: { updateUser } },
       { status: 201 },
     );
   } catch (err) {
     logger(err);
-
     return NextResponse.json(
       { success: false, message: "Erro interno do servidor" },
       { status: 200 },
